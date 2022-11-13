@@ -1,0 +1,71 @@
+
+public class Collision_DoubleHashing_Sol {
+
+    static String [] myTable = new String [5];
+    static String [][] storage = new String[242][10];
+
+
+    public static void main(String[] args) {
+
+//        insert(9, "Zairul"); //9%5 = 4
+//        insert(5, "Mazwan"); //5%5 = 0
+//        insert(12, "Jilani"); //12%5 = 2
+//        insert(15, "Rania");//iter 0 : 15%5 = 0, iter 1 :  (1*3)%5 = 3
+//        insert(23, "Mehmet"); //iter 0 : 23%5 = 3, iter 1: (4*1)%5 = 4, iter 2 : (5*1)%5 = 0, iter 3 : (6*1)%5 = 1, iter 4: (7*1)%5 = 2
+
+        String [][] rawData = ReadFile.readFile("data.csv");
+        for(int i=1; i<rawData.length; i++){
+            int key = Integer.valueOf(rawData[i][3]);
+            String country = rawData[i][0];
+            insert(key, country);
+        }
+        printData();
+
+    }
+
+    public static void insert (int key, String name) {
+
+        int i = 0;
+        int index = hashFunction(key, i);
+
+        while (collision(index)==true) {
+            i++;//increment the i for the next interation if there is collision
+            index = hashFunction(key, i); //get the first hash with i incremented
+            index *= doubleHash (i); //get the second hash and product with the first hash
+            index %= storage.length;
+            System.out.print("Key : "+key+ " i : "+i);
+            System.out.println("  "+index);
+        }
+        storage[index][0] = String.valueOf(key);
+        storage[index][1] = name;
+    }
+
+    public static int hashFunction (int key, int i) {
+        int index = (key%storage.length)+i;
+        return index;
+    }
+
+    public static int doubleHash (int key) {
+        int index = 241 - (key%241);
+        return index;
+    }
+
+    public static boolean collision (int index) {
+        boolean col = false;
+        if (storage[index][0]!=null) {
+            col = true;
+        }
+        return col;
+    }
+
+    public static void printData () {
+
+        for (int i = 0; i<storage.length; i++) {
+            System.out.println("Index : "+i);
+            System.out.print(storage[i][0]);
+            System.out.print(" "+storage[i][1]);
+            System.out.println();
+        }
+    }
+
+}
